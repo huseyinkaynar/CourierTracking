@@ -1,9 +1,6 @@
 package com.hkaynar.couriertracking.Service;
 
-import com.hkaynar.couriertracking.Model.Dto.CourierResponse;
-import com.hkaynar.couriertracking.Model.Dto.ModelResponse;
-
-import java.util.List;
+import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 
 /**
  * @author hkaynar on 07.09.2021

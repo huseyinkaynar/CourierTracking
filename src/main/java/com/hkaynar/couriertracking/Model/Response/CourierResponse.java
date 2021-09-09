@@ -1,4 +1,4 @@
-package com.hkaynar.couriertracking.Model.Dto;
+package com.hkaynar.couriertracking.Model.Response;
 
 import lombok.Data;
 

@@ -1,8 +1,11 @@
 package com.hkaynar.couriertracking.Model.Dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author hkaynar on 07.09.2021
@@ -11,7 +14,8 @@ import java.util.Calendar;
 public class CourierDto {
 
     private String courierName;
-    private Calendar time;
-    private float latitude;
-    private float longitude;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date time;
+    private double latitude;
+    private double longitude;
 }

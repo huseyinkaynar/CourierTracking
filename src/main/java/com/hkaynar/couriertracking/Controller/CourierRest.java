@@ -1,6 +1,6 @@
 package com.hkaynar.couriertracking.Controller;
 
-import com.hkaynar.couriertracking.Model.Dto.ModelResponse;
+import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 import com.hkaynar.couriertracking.Service.CourierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +19,13 @@ public class CourierRest {
     @Autowired
     CourierService courierService;
 
+
+
     @GetMapping("list")
     public ResponseEntity<ModelResponse> readCheckServices(){
         return new ResponseEntity<>(courierService.getAllCourier(), HttpStatus.OK);
 
     }
+
+
 }
