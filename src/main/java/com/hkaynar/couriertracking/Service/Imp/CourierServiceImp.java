@@ -3,7 +3,6 @@ package com.hkaynar.couriertracking.Service.Imp;
 import com.hkaynar.couriertracking.Exception.NotFoundException;
 import com.hkaynar.couriertracking.Model.Dto.CourierDto;
 import com.hkaynar.couriertracking.Model.Entity.Courier;
-import com.hkaynar.couriertracking.Model.Entity.CourierTracking;
 import com.hkaynar.couriertracking.Model.LatitudeAndLongitude;
 import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 import com.hkaynar.couriertracking.Model.Response.TotalDistanceResponse;
@@ -16,8 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,9 +76,11 @@ public class CourierServiceImp implements CourierService {
     }
 
     @Override
-    public void saveCourier(CourierDto courierDto) {
+    public CourierDto saveCourier(CourierDto courierDto) {
         ModelMapper modelMapper=new ModelMapper();
         Courier courier=modelMapper.map(courierDto,Courier.class);
         courierRepository.save(courier);
+
+        return courierDto;
     }
 }

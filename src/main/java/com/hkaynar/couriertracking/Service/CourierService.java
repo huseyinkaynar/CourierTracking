@@ -18,6 +18,6 @@ public interface CourierService {
 
     void checkCourier(String name) throws NotFoundException;
 
-    void saveCourier(CourierDto courierDto);
+    CourierDto saveCourier(CourierDto courierDto);
 
 }

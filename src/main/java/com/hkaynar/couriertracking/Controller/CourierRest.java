@@ -24,9 +24,10 @@ public class CourierRest {
 
     }
     @PostMapping("save")
-    public void saveCourier(@RequestBody CourierDto courierDto){
-        courierService.saveCourier(courierDto);
+    public CourierDto saveCourier(@RequestBody CourierDto courierDto){
+        return courierService.saveCourier(courierDto);
     }
+
     @GetMapping("check")
     public ResponseEntity<ModelResponse> checkCourier(){
         return new ResponseEntity<>(courierService.getAllCourier(), HttpStatus.OK);
