@@ -69,8 +69,6 @@ public class CourierServiceImp implements CourierService {
         List<Courier> courier=courierRepository.findByCourierName(name);
         if (courier.size()==0){
             throw new NotFoundException("This courier not found.");
-        }else if (courier.size()>1) {
-            throw new NotFoundException("This courier name has been taken.");
         }
 
     }

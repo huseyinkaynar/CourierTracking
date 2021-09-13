@@ -28,12 +28,6 @@ public class CourierRest {
         return courierService.saveCourier(courierDto);
     }
 
-    @GetMapping("check")
-    public ResponseEntity<ModelResponse> checkCourier(){
-        return new ResponseEntity<>(courierService.getAllCourier(), HttpStatus.OK);
-
-    }
-
     @PostMapping("total_distance")
     public ResponseEntity<?>  totalDistanceCourier(@RequestBody CourierDto courierDto){
 
