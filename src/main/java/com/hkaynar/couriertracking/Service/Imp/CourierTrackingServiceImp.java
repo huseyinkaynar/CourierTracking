@@ -2,15 +2,16 @@ package com.hkaynar.couriertracking.Service.Imp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hkaynar.couriertracking.Model.Dto.CourierDto;
+import com.hkaynar.couriertracking.Exception.NotFoundException;
+import com.hkaynar.couriertracking.Model.Dto.CourierTrackingDto;
 import com.hkaynar.couriertracking.Model.Entity.CourierLog;
-import com.hkaynar.couriertracking.Model.Response.CourierLogResponse;
 import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 import com.hkaynar.couriertracking.Model.Dto.StoreModel;
 import com.hkaynar.couriertracking.Model.Entity.CourierTracking;
 import com.hkaynar.couriertracking.Populator.CourierLogPopulator;
 import com.hkaynar.couriertracking.Repository.CourierLogRepository;
 import com.hkaynar.couriertracking.Repository.CourierTrackingRepository;
+import com.hkaynar.couriertracking.Service.CourierService;
 import com.hkaynar.couriertracking.Service.CourierTrackingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author hkaynar on 08.09.2021
@@ -37,6 +35,8 @@ public class CourierTrackingServiceImp implements CourierTrackingService {
     CourierLogRepository courierLogRepository;
     @Autowired
     CourierLogPopulator courierLogPopulator;
+    @Autowired
+    CourierService courierService;
 
     @Override
     public float countMeter(double lat1, double lng1, double lat2, double lng2) {
@@ -58,29 +58,29 @@ public class CourierTrackingServiceImp implements CourierTrackingService {
     }
 
     @Override
-    public ModelResponse logingCourier(CourierDto courierDto) throws IOException {
+    public ModelResponse logingCourier(CourierTrackingDto courierTrackingDto) throws NotFoundException {
+
+        courierService.checkCourier(courierTrackingDto.getCourierName());
         //Save all courier location
-        saveCourierTrack(courierDto);
+        saveCourierTrack(courierTrackingDto);
 
-        checkDistance(courierDto);
-
-        return new ModelResponse(courierDto);
+        return new ModelResponse(checkDistance(courierTrackingDto));
     }
 
 
     @Override
-    public void saveCourierTrack(CourierDto courierDto) {
+    public void saveCourierTrack(CourierTrackingDto courierTrackingDto) {
         ModelMapper mapper = new ModelMapper();
 
         CourierTracking courierTracking=null;
-        courierTracking=mapper.map(courierDto,CourierTracking.class);
+        courierTracking=mapper.map(courierTrackingDto,CourierTracking.class);
         courierTrackingRepository.save(courierTracking);
     }
 
     @Override
-    public void checkDistance(CourierDto courierDto)  {
+    public CourierLog checkDistance(CourierTrackingDto courierTrackingDto)  {
         List<StoreModel> storeModels = null;
-
+        CourierLog courierLog = null;
         try {
             ObjectMapper objectMapper=new ObjectMapper();
             InputStream inputStream=new FileInputStream(new File(jsonFilePath));
@@ -92,38 +92,41 @@ public class CourierTrackingServiceImp implements CourierTrackingService {
         }
 
         for (StoreModel s:storeModels) {
-            float distance=countMeter(courierDto.getLatitude(),courierDto.getLongitude(),s.getLat(),s.getLng());
+            float distance=countMeter(courierTrackingDto.getLatitude(), courierTrackingDto.getLongitude(),s.getLat(),s.getLng());
             if(distance<100){
-                saveCourierLog(courierDto,s.getName());
+                courierLog=saveCourierLog(courierTrackingDto,s.getName());
             }
         }
+
+        return courierLog;
     }
 
     @Override
-    public void saveCourierLog(CourierDto courierDto, String storeName) {
-        CourierLog courierLog;
+    public CourierLog saveCourierLog(CourierTrackingDto courierTrackingDto, String storeName) {
+        CourierLog courierLog = null;
         long diffInMillies;
-        CourierLog courierLogCompare=courierLogRepository.findTopByCourierNameOrderByTimeDesc(courierDto.getCourierName());
+        CourierLog courierLogCompare=courierLogRepository.findTopByCourierNameOrderByTimeDesc(courierTrackingDto.getCourierName());
 
         if (courierLogCompare!=null){
-            diffInMillies = courierDto.getTime().getTime() - courierLogCompare.getTime().getTime();
+            diffInMillies = courierTrackingDto.getTime().getTime() - courierLogCompare.getTime().getTime();
 
             //If in a minute enter another store zone
             if (!storeName.equals(courierLogCompare.getStoreName())){
-                courierLog=courierLogPopulator.courierDtotoLog(courierDto,storeName);
+                courierLog=courierLogPopulator.courierDtotoLog(courierTrackingDto,storeName);
                 courierLogRepository.save(courierLog);
                 //Same store over a minute
             }else if (storeName.equals(courierLogCompare.getStoreName())  && diffInMillies>60000){
-                courierLog=courierLogPopulator.courierDtotoLog(courierDto,storeName);
+                courierLog=courierLogPopulator.courierDtotoLog(courierTrackingDto,storeName);
                 courierLogRepository.save(courierLog);
             }
         }
         //First Loging Courier
         else{
-            courierLog=courierLogPopulator.courierDtotoLog(courierDto,storeName);
+            courierLog=courierLogPopulator.courierDtotoLog(courierTrackingDto,storeName);
             courierLogRepository.save(courierLog);
         }
 
+        return courierLog;
 
     }
 }

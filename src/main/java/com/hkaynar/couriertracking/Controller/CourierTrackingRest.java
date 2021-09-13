@@ -1,8 +1,12 @@
 package com.hkaynar.couriertracking.Controller;
 
-import com.hkaynar.couriertracking.Model.Dto.CourierDto;
+import com.hkaynar.couriertracking.Exception.NotFoundException;
+import com.hkaynar.couriertracking.Model.Dto.CourierTrackingDto;
+import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 import com.hkaynar.couriertracking.Service.CourierTrackingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +26,7 @@ public class CourierTrackingRest {
 
 
     @PostMapping("log")
-    public void loggingCourier(@RequestBody CourierDto courierDto) throws IOException {
-        courierTrackingService.logingCourier(courierDto);
+    public ResponseEntity<?> loggingCourier(@RequestBody CourierTrackingDto courierTrackingDto) throws IOException, NotFoundException {
+        return new ResponseEntity<>(courierTrackingService.logingCourier(courierTrackingDto), HttpStatus.OK);
     }
 }

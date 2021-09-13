@@ -1,7 +1,8 @@
 package com.hkaynar.couriertracking.Service;
 
-import com.hkaynar.couriertracking.Model.Dto.CourierDto;
-import com.hkaynar.couriertracking.Model.Response.CourierLogResponse;
+import com.hkaynar.couriertracking.Exception.NotFoundException;
+import com.hkaynar.couriertracking.Model.Dto.CourierTrackingDto;
+import com.hkaynar.couriertracking.Model.Entity.CourierLog;
 import com.hkaynar.couriertracking.Model.Response.ModelResponse;
 
 import java.io.IOException;
@@ -11,10 +12,10 @@ import java.io.IOException;
  */
 public interface CourierTrackingService {
     float countMeter(double lat1, double lng1, double lat2, double lng2);
-    ModelResponse logingCourier(CourierDto courierDto) throws IOException;
-    void saveCourierTrack(CourierDto courierDto);
-    void checkDistance(CourierDto courierDto) ;
-    void saveCourierLog(CourierDto courierDto, String storeName);
+    ModelResponse logingCourier(CourierTrackingDto courierTrackingDto) throws IOException, NotFoundException;
+    void saveCourierTrack(CourierTrackingDto courierTrackingDto);
+    CourierLog checkDistance(CourierTrackingDto courierTrackingDto) ;
+    CourierLog saveCourierLog(CourierTrackingDto courierTrackingDto, String storeName);
 
 
 }
